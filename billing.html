@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dum Spot - Billing</title>
+    <link rel="stylesheet" href="global.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        .admin-container { max-width: 800px; margin: 40px auto; padding: 0 20px; min-height: 60vh; }
+        .dashboard-header { margin-bottom: 30px; border-bottom: 2px solid #eee; padding-bottom: 15px; color: var(--brand-red, #e03131); font-weight: 800; }
+        .form-card { background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); margin-bottom: 20px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        
+        .cart-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        .cart-table th, .cart-table td { padding: 10px; border-bottom: 1px solid #eee; text-align: left; }
+        
+        .btn-add { background: #4dabf7; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-weight: 600; }
+        .btn-submit { width: 100%; background: #2b8a3e; color: white; border: none; padding: 15px; font-weight: 600; cursor: pointer; border-radius: 4px; font-size: 16px; margin-top: 20px; }
+        .btn-submit:disabled { background: #ccc; cursor: not-allowed; }
+
+        #receipt-print-area { display: none; }
+        @media print {
+            body * { visibility: hidden; }
+            #receipt-print-area, #receipt-print-area * { visibility: visible; display: block !important; }
+            #receipt-print-area { position: absolute; left: 0; top: 0; width: 80mm; font-family: monospace; font-size: 12px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="top-bar">
+    <span>🕒 Open Daily: 4:00 PM - 12:00 AM (Midnight)</span>
+    <span>📞 Delivery: 8089 105 069</span>
+</div>
+
+<header>
+    <div class="logo-container">
+        <span class="flame-icon">🔥</span>
+        <h1>Dum Spot</h1>
+        <div class="restaurant-badge">RESTAURANT</div>
+    </div>
+    <nav>
+        <a href="admin.html">Admin Portal</a>
+        <a href="billing.html" class="active">Billing</a>
+        <a href="sales.html">Total Sales</a>
+    </nav>
+</header>
+
+<div class="admin-container">
+    <div class="dashboard-header">
+        <h2>Manual Billing</h2>
+    </div>
+
+    <div class="form-card">
+        <div class="form-group">
+            <label>Customer Name</label>
+            <input type="text" id="customerName" required>
+        </div>
+        <div class="form-group">
+            <label>Phone Number</label>
+            <input type="tel" id="customerPhone" required>
+        </div>
+        <div class="form-group">
+            <label>Address</label>
+            <textarea id="customerAddress" rows="2"></textarea>
+        </div>
+    </div>
+
+    <div class="form-card">
+        <h3>Add Items</h3>
+        <div class="form-group">
+            <label>Dish</label>
+            <select id="dishSelect">
+                <option value="Kuttan Dum Biriyani|180">Kuttan Dum Biriyani - ₹180</option>
+                <option value="Lagoon Dum Biriyani|220">Lagoon Dum Biriyani - ₹220</option>
+                <option value="Mandi Rice|160">Mandi Rice - ₹160</option>
+                <option value="Al Faham|240">Al Faham - ₹240</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Quantity</label>
+            <input type="number" id="dishQty" value="1" min="1">
+        </div>
+        <button class="btn-add" onclick="addToCart()">+ Add to Cart</button>
+
+        <table class="cart-table">
+            <thead><tr><th>Item</th><th>Qty</th><th>Total</th></tr></thead>
+            <tbody id="cartBody"></tbody>
+        </table>
+        
+        <h3>Grand Total: ₹<span id="grandTotal">0</span></h3>
+        <button id="submitBtn" class="btn-submit" onclick="saveAndPrint()" disabled>Save & Print Bill</button>
+    </div>
+</div>
+
+<div id="receipt-print-area"></div>
+
+<footer>
+    <div class="footer-container">
+        <div class="footer-section"><h3>Dum Spot</h3><p>Serving up the absolute best biriyani and traditional flavors in town.</p></div>
+        <div class="footer-section"><h3>Service Hours</h3><p><strong>Everyday:</strong> 4:00 PM - 12:00 AM</p><p class="delivery-tag">🔴 Home Delivery Available</p></div>
+        <div class="footer-section"><h3>Contact Us</h3><p><strong>Phone:</strong> 8089 105 069</p><p style="font-size: 13px; color: #ccc;">പാർട്ടി ഓർഡറുകൾ സ്വീകരിക്കുന്നു.</p></div>
+    </div>
+    <div class="footer-bottom">&copy; 2026 Dum Spot Restaurant. All Rights Reserved.</div>
+</footer>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBqW2a1Nu4x4HM8sVaNUz2TvwNYITjj6O8",
+    authDomain: "dumspotwebapp.firebaseapp.com",
+    projectId: "dumspotwebapp",
+    storageBucket: "dumspotwebapp.firebasestorage.app",
+    messagingSenderId: "335424837749",
+    appId: "1:335424837749:web:e899dc0ffd4896ce1a803c",
+    measurementId: "G-JYMJCJJ88E"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  let cart = [];
+
+  window.addToCart = () => {
+      const itemData = document.getElementById('dishSelect').value.split('|');
+      const qty = parseInt(document.getElementById('dishQty').value);
+      const item = { name: itemData[0], price: parseInt(itemData[1]), qty: qty, lineTotal: parseInt(itemData[1]) * qty };
+      cart.push(item);
+      renderCart();
+  };
+
+  function renderCart() {
+      const tbody = document.getElementById('cartBody');
+      tbody.innerHTML = cart.map(i => `<tr><td>${i.name}</td><td>${i.qty}</td><td>₹${i.lineTotal}</td></tr>`).join('');
+      const total = cart.reduce((sum, i) => sum + i.lineTotal, 0);
+      document.getElementById('grandTotal').innerText = total;
+      document.getElementById('submitBtn').disabled = cart.length === 0;
+  }
+
+  window.saveAndPrint = async () => {
+      const btn = document.getElementById('submitBtn');
+      btn.innerText = "Saving...";
+      const total = cart.reduce((sum, i) => sum + i.lineTotal, 0);
+      
+      const orderData = {
+          name: document.getElementById('customerName').value || "Walk-in",
+          phone: document.getElementById('customerPhone').value,
+          address: document.getElementById('customerAddress').value,
+          items: cart,
+          total: total,
+          date: new Date().toLocaleString(),
+          createdAt: Date.now(),
+          status: 'Offline Paid'
+      };
+
+      try {
+          const docRef = await addDoc(collection(db, "orders"), orderData);
+          let itemsHtml = cart.map(i => `<p>${i.name} x ${i.qty} = ₹${i.lineTotal}</p>`).join('');
+          
+          document.getElementById('receipt-print-area').innerHTML = `
+              <div class="receipt-header"><h2>DUM SPOT</h2></div>
+              <p>Date: ${orderData.date}<br>Order: ${docRef.id}</p>
+              <hr>
+              <strong>Items:</strong>
+              ${itemsHtml}
+              <hr>
+              <p><strong>GRAND TOTAL: ₹${total}</strong></p>
+              <hr><p>Thank You!</p>
+          `;
+          window.print();
+          cart = []; renderCart(); 
+          btn.innerText = "Save & Print Bill";
+      } catch (error) {
+          alert("Error: " + error.message);
+          btn.innerText = "Save & Print Bill";
+      }
+  };
+</script>
+
+</body>
+</html>

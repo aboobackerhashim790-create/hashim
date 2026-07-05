@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dum Spot Restaurant - Premium Menu</title>
+    <!-- Combined isolated stylesheet declarations -->
+    <link rel="stylesheet" href="global.css">
+    <link rel="stylesheet" href="index.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        /* Styling for the status notification popup banner */
+        .status-popup {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 14px;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: slideIn 0.5s ease-out;
+        }
+        .status-popup.open {
+            background-color: #2b8a3e; /* Green background for open status */
+            color: white;
+        }
+        .status-popup.closed {
+            background-color: #e03131; /* Red background for closed status */
+            color: white;
+        }
+        @keyframes slideIn {
+            from { transform: translateY(100px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* RESPONSIVE FIX FOR MOBILE DEVICES */
+        @media (max-width: 600px) {
+            .status-popup {
+                right: 15px;
+                left: 15px;          
+                bottom: 15px;
+                justify-content: center; 
+                font-size: 13px;     
+                padding: 12px 15px;  
+            }
+        }
+
+        /* --- Admin Portal Modal Popup Styling --- */
+        .admin-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: #1a1a1a;
+            padding: 30px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 320px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.5);
+            font-family: 'Poppins', sans-serif;
+            border: 1px solid #333;
+            position: relative;
+        }
+        .modal-content h3 {
+            margin-top: 0;
+            color: #fff;
+            font-size: 18px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .modal-content input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 12px;
+            border-radius: 4px;
+            border: 1px solid #444;
+            background: #2a2a2a;
+            color: #fff;
+            box-sizing: border-box;
+        }
+        .modal-content button {
+            width: 100%;
+            background: #e03131;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .modal-content button:hover {
+            background: #c92a2a;
+        }
+        .close-modal {
+            position: absolute;
+            top: 10px;
+            right: 14px;
+            color: #aaa;
+            font-size: 20px;
+            cursor: pointer;
+        }
+        .admin-icon-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            opacity: 0.5;
+            transition: opacity 0.2s;
+            padding: 5px;
+        }
+        .admin-icon-btn:hover {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Top Info Bar for Timings -->
+<div class="top-bar">
+    <span>🕒 Open Daily: 4:00 PM - 12:00 AM (Midnight)</span>
+    <span>📞 Delivery: 8089 105 069</span>
+</div>
+
+<header>
+    <div class="logo-container">
+        <span class="flame-icon">🔥</span>
+        <h1>Dum Spot</h1>
+        <div class="restaurant-badge">RESTAURANT</div>
+    </div>
+    <nav>
+        <a href="index.html" class="active">Home Menu</a>
+        <a href="order.html">Order Online</a>
+    </nav>
+</header>
+
+<div class="container">
+    <div class="section-title">
+        <h2>Our Signature Dishes</h2>
+        <p>Fresh, flavorful, and delivered hot right to your doorstep!</p>
+    </div>
+    
+    <div class="menu-grid">
+        <!-- Dish 1 -->
+        <div class="menu-card">
+            <div class="image-container">
+                <img src="https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?q=80&w=600&auto=format&fit=cover" alt="Kuttan Dum Biriyani">
+                <span class="badge">Popular</span>
+            </div>
+            <div class="card-info">
+                <h3>Kuttan Dum Biriyani</h3>
+                <div class="price">₹180</div>
+                <a href="order.html" class="order-btn">Order Now</a>
+            </div>
+        </div>
+
+        <!-- Dish 2 -->
+        <div class="menu-card">
+            <div class="image-container">
+                <img src="https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?q=80&w=600&auto=format&fit=cover" alt="Lagoon Dum Biriyani">
+            </div>
+            <div class="card-info">
+                <h3>Lagoon Dum Biriyani</h3>
+                <div class="price">₹220</div>
+                <a href="order.html" class="order-btn">Order Now</a>
+            </div>
+        </div>
+
+        <!-- Dish 3 -->
+        <div class="menu-card">
+            <div class="image-container">
+                <img src="https://images.unsplash.com/photo-1633945274405-b6c8069047b0?q=80&w=600&auto=format&fit=cover" alt="Mandi Rice">
+            </div>
+            <div class="card-info">
+                <h3>Mandi Rice</h3>
+                <div class="price">₹160</div>
+                <a href="order.html" class="order-btn">Order Now</a>
+            </div>
+        </div>
+
+        <!-- Dish 4 -->
+        <div class="menu-card">
+            <div class="image-container">
+                <img src="https://images.unsplash.com/photo-1598515214211-89d3c73ae83b?q=80&w=600&auto=format&fit=cover" alt="Al Faham">
+            </div>
+            <div class="card-info">
+                <h3>Al Faham</h3>
+                <div class="price">₹240</div>
+                <a href="order.html" class="order-btn">Order Now</a>
+            </div>
+        </div>
+
+        <!-- Dish 5 -->
+        <div class="menu-card">
+            <div class="image-container">
+                <img src="https://images.unsplash.com/photo-1626132647523-66f5bf380027?q=80&w=600&auto=format&fit=cover" alt="Ghee Rice">
+            </div>
+            <div class="card-info">
+                <h3>Ghee Rice</h3>
+                <div class="price">₹100</div>
+                <a href="order.html" class="order-btn">Order Now</a>
+            </div>
+        </div>
+
+        <!-- Dish 6 -->
+        <div class="menu-card">
+            <div class="image-container">
+                <img src="https://images.unsplash.com/photo-1562967914-608f82629710?q=80&w=600&auto=format&fit=cover" alt="Chicken Piece">
+            </div>
+            <div class="card-info">
+                <h3>Chicken Piece</h3>
+                <div class="price">₹80</div>
+                <a href="order.html" class="order-btn">Order Now</a>
+            </div>
+        </div>
+
+        <!-- Dish 7 -->
+        <div class="menu-card">
+            <div class="image-container">
+                <img src="https://images.unsplash.com/photo-1604382355076-af4b0eb60143?q=80&w=600&auto=format&fit=cover" alt="Chicken Pollichath">
+                <span class="badge">Chef Special</span>
+            </div>
+            <div class="card-info">
+                <h3>Chicken Pollichath</h3>
+                <div class="price">₹280</div>
+                <a href="order.html" class="order-btn">Order Now</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <div class="footer-container">
+        <div class="footer-section">
+            <h3>Dum Spot</h3>
+            <p>Serving up the absolute best biriyani and traditional flavors in town.</p>
+        </div>
+        <div class="footer-section">
+            <h3>Service Hours</h3>
+            <p><strong>Everyday:</strong> 4:00 PM - 12:00 AM</p>
+            <p class="delivery-tag">🔴 Home Delivery Available</p>
+        </div>
+          <div class="footer-bottom">
+          &copy; 2026 Dum Spot Restaurant. All Rights Reserved. 
+          <!-- Hidden Key Icon For Staff Login Portal -->
+          <button class="admin-icon-btn" id="openAdminModal" title="Staff Portal">🔑</button>
+      </div>
+        <div class="footer-section">
+            <h3>Contact Us</h3>
+            <p><strong>Phone:</strong> 8089 105 069</p>
+            <p style="font-size: 13px; color: #ccc;">പാർട്ടി ഓർഡറുകൾ സ്വീകരിക്കുന്നു.</p>
+        </div>
+    </div>
+   
+</footer>
+
+<!-- Secure Modal Overlay Window -->
+<div class="admin-modal" id="adminModal">
+    <div class="modal-content">
+        <span class="close-modal" id="closeAdminModal">&times;</span>
+        <h3>Staff Login</h3>
+        <form id="adminLoginForm">
+            <input type="text" id="adminUser" placeholder="Username" required>
+            <input type="password" id="adminPass" placeholder="Password" required>
+            <button type="submit">Verify & Access</button>
+        </form>
+    </div>
+</div>
+
+<!-- JavaScript to check live restaurant timings & handle modal inputs -->
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Live Timing Status Popup Logic
+        const now = new Date();
+        const currentHour = now.getHours(); 
+
+        const popup = document.createElement('div');
+        popup.className = 'status-popup';
+
+        if (currentHour >= 16) {
+            popup.classList.add('open');
+            popup.innerHTML = '🟢 The hotel is open now!';
+        } else {
+            popup.classList.add('closed');
+            popup.innerHTML = '🔴 The hotel will open at 4:00 PM';
+        }
+
+        document.body.appendChild(popup);
+
+        setTimeout(() => {
+            popup.style.transition = 'opacity 0.5s ease';
+            popup.style.opacity = '0';
+            setTimeout(() => popup.remove(), 500);
+        }, 6000);
+
+        // --- Popup Modal Window Controls ---
+        const modal = document.getElementById('adminModal');
+        const openBtn = document.getElementById('openAdminModal');
+        const closeBtn = document.getElementById('closeAdminModal');
+
+        openBtn.addEventListener('click', () => modal.style.display = 'flex');
+        closeBtn.addEventListener('click', () => modal.style.display = 'none');
+        
+        // Hide modal if clicked outside the container box
+        window.addEventListener('click', (e) => {
+            if (e.target === modal) modal.style.display = 'none';
+        });
+
+        // Verification Event Listener Routing
+        document.getElementById('adminLoginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const user = document.getElementById('adminUser').value.trim();
+            const pass = document.getElementById('adminPass').value.trim();
+
+            if (user === "admin" && pass === "dumspot123") {
+                window.location.href = "admin.html";
+            } else {
+                alert("❌ Invalid Admin Credentials. Please try again.");
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dum Spot - Admin Portal</title>
+    <link rel="stylesheet" href="global.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        /* Admin Interface Styles */
+        .admin-container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+            min-height: 60vh;
+        }
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 15px;
+        }
+        .dashboard-header h2 {
+            color: var(--brand-red, #e03131);
+            font-weight: 800;
+            margin: 0;
+        }
+        .order-count-badge {
+            background: #212529;
+            color: #fff;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .table-responsive {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            overflow-x: auto;
+        }
+        .orders-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 14px;
+        }
+        .orders-table th {
+            background-color: #f8f9fa;
+            color: #495057;
+            font-weight: 600;
+            padding: 15px;
+            border-bottom: 2px solid #dee2e6;
+        }
+        .orders-table td {
+            padding: 15px;
+            border-bottom: 1px solid #dee2e6;
+            vertical-align: top;
+            color: #333;
+        }
+        .orders-table tr:hover {
+            background-color: #f8f9fa;
+        }
+        .customer-info strong {
+            display: block;
+            color: #111;
+            font-size: 15px;
+        }
+        .customer-info span {
+            color: #666;
+            font-size: 13px;
+        }
+        .address-text {
+            max-width: 250px;
+            word-wrap: break-word;
+            white-space: pre-line;
+            font-size: 13px;
+            color: #555;
+        }
+        .item-details {
+            font-weight: 600;
+            color: #212529;
+        }
+        .item-details span {
+            color: #868e96;
+            font-weight: 400;
+        }
+        .price-text {
+            font-weight: 600;
+            color: #2b8a3e;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            background-color: #ffe066;
+            color: #868e96;
+        }
+        .print-btn {
+            background-color: #228be6;
+            color: white;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            font-family: 'Poppins', sans-serif;
+            font-size: 13px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: background 0.2s;
+        }
+        .print-btn:hover {
+            background-color: #1c7ed6;
+        }
+        .no-orders {
+            text-align: center;
+            padding: 40px;
+            color: #868e96;
+            font-size: 16px;
+        }
+
+        /* Hidden Receipt Element Container for Standard Display */
+        #receipt-print-area {
+            display: none;
+        }
+
+        /* ------------------------------------
+           CRITICAL CSS FOR PRINT MODE
+        ------------------------------------ */
+        @media print {
+            body * {
+                visibility: hidden;
+                height: 0;
+                margin: 0;
+                padding: 0;
+            }
+            #receipt-print-area, #receipt-print-area * {
+                visibility: visible;
+                display: block !important;
+                height: auto !important;
+            }
+            #receipt-print-area {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 80mm; 
+                padding: 10px;
+                font-family: monospace;
+                font-size: 12px;
+                line-height: 1.4;
+                color: #000;
+            }
+            .receipt-header {
+                text-align: center;
+                margin-bottom: 15px;
+            }
+            .receipt-header h2 {
+                margin: 0;
+                font-size: 18px;
+                text-transform: uppercase;
+            }
+            .receipt-divider {
+                border-top: 1px dashed #000;
+                margin: 8px 0;
+            }
+            .receipt-row {
+                display: flex;
+                justify-content: space-between;
+                margin: 3px 0;
+            }
+            .receipt-left {
+                text-align: left;
+            }
+            .receipt-right {
+                text-align: right;
+                margin-left: auto;
+            }
+            .receipt-footer {
+                text-align: center;
+                margin-top: 15px;
+                font-size: 11px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Top Info Bar for Timings -->
+<div class="top-bar">
+    <span>🕒 Open Daily: 4:00 PM - 12:00 AM (Midnight)</span>
+    <span>📞 Delivery: 8089 105 069</span>
+</div>
+
+<header>
+    <div class="logo-container">
+        <span class="flame-icon">🔥</span>
+        <h1>Dum Spot</h1>
+        <div class="restaurant-badge">RESTAURANT</div>
+    </div>
+    <!-- Updated Navigation Menu Context -->
+    <nav>
+        <a href="admin.html" class="active">Admin Portal</a>
+        <a href="billing.html">Billing</a>
+        <a href="sales.html">Total Sales</a>
+    </nav>
+</header>
+
+<div class="admin-container">
+    <div class="dashboard-header">
+        <h2>Live Kitchen Dashboard</h2>
+        <div id="orderCounter" class="order-count-badge">Active Orders: 0</div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="orders-table">
+            <thead>
+                <tr>
+                    <th>Time & ID</th>
+                    <th>Customer</th>
+                    <th>Delivery Address</th>
+                    <th>Items Ordered</th>
+                    <th>Total Due</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="ordersTableBody">
+                <tr>
+                    <td colspan="6" class="no-orders">Connecting live to Cloud Kitchen database...</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Isolated Printing Template Area -->
+<div id="receipt-print-area"></div>
+
+<footer>
+    <div class="footer-container">
+        <div class="footer-section">
+            <h3>Dum Spot</h3>
+            <p>Serving up the absolute best biriyani and traditional flavors in town.</p>
+        </div>
+        <div class="footer-section">
+            <h3>Service Hours</h3>
+            <p><strong>Everyday:</strong> 4:00 PM - 12:00 AM</p>
+            <p class="delivery-tag">🔴 Home Delivery Available</p>
+        </div>
+        <div class="footer-section">
+            <h3>Contact Us</h3>
+            <p><strong>Phone:</strong> 8089 105 069</p>
+            <p style="font-size: 13px; color: #ccc;">പാർട്ടി ഓർഡറുകൾ സ്വീകരിക്കുന്നു.</p>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        &copy; 2026 Dum Spot Restaurant. All Rights Reserved.
+    </div>
+</footer>
+
+<!-- Firebase Modular Script SDK Integration -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getFirestore, collection, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBqW2a1Nu4x4HM8sVaNUz2TvwNYITjj6O8",
+    authDomain: "dumspotwebapp.firebaseapp.com",
+    projectId: "dumspotwebapp",
+    storageBucket: "dumspotwebapp.firebasestorage.app",
+    messagingSenderId: "335424837749",
+    appId: "1:335424837749:web:e899dc0ffd4896ce1a803c",
+    measurementId: "G-JYMJCJJ88E"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  const tableBody = document.getElementById('ordersTableBody');
+  const counterBadge = document.getElementById('orderCounter');
+
+  const ordersQuery = query(collection(db, "orders"), orderBy("createdAt", "desc"));
+
+  onSnapshot(ordersQuery, (snapshot) => {
+      let htmlContent = "";
+      let count = 0;
+      
+      if (snapshot.empty) {
+          tableBody.innerHTML = `<tr><td colspan="6" class="no-orders">🚫 No orders placed yet today.</td></tr>`;
+          counterBadge.innerText = "Active Orders: 0";
+          return;
+      }
+
+      window.loadedOrdersCache = {};
+
+      snapshot.forEach((doc) => {
+          const order = doc.data();
+          const orderKey = order.id || doc.id;
+          window.loadedOrdersCache[orderKey] = order;
+          count++;
+
+          htmlContent += `
+              <tr>
+                  <td>
+                      <span style="font-size:12px; color:#666; display:block;">${order.date || 'N/A'}</span>
+                      <strong style="color:var(--brand-red); font-size:12px;">${order.id || 'N/A'}</strong>
+                  </td>
+                  <td class="customer-info">
+                      <strong>${escapeHtml(order.name)}</strong>
+                      <span>📞 ${escapeHtml(order.phone)}</span>
+                  </td>
+                  <td>
+                      <div class="address-text">${escapeHtml(order.address)}</div>
+                  </td>
+                  <td class="item-details">
+                      ${escapeHtml(order.dish)} <br><span>Qty: ${order.quantity}</span>
+                  </td>
+                  <td class="price-text">₹${order.total}</td>
+                  <td>
+                      <button class="print-btn" onclick="triggerReceiptPrint('${orderKey}')">
+                          🖨️ Print Bill
+                      </button>
+                  </td>
+              </tr>
+          `;
+      });
+
+      tableBody.innerHTML = htmlContent;
+      counterBadge.innerText = `Active Orders: ${count}`;
+  }, (error) => {
+      console.error("Firestore listening error: ", error);
+      tableBody.innerHTML = `<tr><td colspan="6" class="no-orders" style="color:red;">❌ Error loading backend streaming channels data.</td></tr>`;
+  });
+
+  window.triggerReceiptPrint = function(orderId) {
+      const targetOrder = window.loadedOrdersCache[orderId];
+      if (!targetOrder) {
+          alert("Error extracting payload sequence profile.");
+          return;
+      }
+
+      const printArea = document.getElementById('receipt-print-area');
+      
+      printArea.innerHTML = `
+          <div class="receipt-header">
+              <h2>DUM SPOT</h2>
+              <p>Premium Dum Biriyani Kitchen<br>Ph: 8089 105 069</p>
+          </div>
+          <div class="receipt-divider"></div>
+          <div class="receipt-row"><span class="receipt-left">Date:</span><span class="receipt-right">${targetOrder.date}</span></div>
+          <div class="receipt-row"><span class="receipt-left">Order ID:</span><span class="receipt-right">${targetOrder.id}</span></div>
+          <div class="receipt-divider"></div>
+          <div class="receipt-row"><strong><span class="receipt-left">CUSTOMER DETAILS:</span></strong></div>
+          <div class="receipt-row"><span class="receipt-left">Name:</span><span class="receipt-right">${escapeHtml(targetOrder.name)}</span></div>
+          <div class="receipt-row"><span class="receipt-left">Phone:</span><span class="receipt-right">${escapeHtml(targetOrder.phone)}</span></div>
+          <div class="receipt-row" style="margin-top: 4px;"><span class="receipt-left">Address:</span></div>
+          <div style="font-size:11px; white-space:pre-line; padding-left:5px; margin-bottom:5px;">${escapeHtml(targetOrder.address)}</div>
+          <div class="receipt-divider"></div>
+          <div class="receipt-row"><strong><span class="receipt-left">ITEM</span></strong><strong><span class="receipt-right">TOTAL</span></strong></div>
+          <div class="receipt-row">
+              <span class="receipt-left">${escapeHtml(targetOrder.dish)} x ${targetOrder.quantity}</span>
+              <span class="receipt-right">₹${targetOrder.total}</span>
+          </div>
+          <div class="receipt-divider"></div>
+          <div class="receipt-row" style="font-size: 14px; font-weight: bold;">
+              <span class="receipt-left">GRAND TOTAL:</span>
+              <span class="receipt-right">₹${targetOrder.total}</span>
+          </div>
+          <div class="receipt-divider"></div>
+          <div class="receipt-footer">
+              <p>Thank You For Ordering From Dum Spot!<br>Have a Delicious Meal! 🔥</p>
+          </div>
+      `;
+
+      window.print();
+  };
+
+  function escapeHtml(string) {
+      if(!string) return '';
+      return String(string).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+</script>
+
+</body>
+</html>

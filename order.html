@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dum Spot - Order Online</title>
+    <link rel="stylesheet" href="global.css">
+    <link rel="stylesheet" href="order.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        .radius-notice {
+            background-color: #fff3cd;
+            border: 1px solid #ffeeba;
+            color: #856404;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        .maps-link {
+            display: inline-block;
+            color: var(--brand-red);
+            font-weight: 600;
+            text-decoration: underline;
+            margin-top: 5px;
+        }
+        .maps-link:hover {
+            color: var(--dark-black);
+        }
+        .checkbox-group {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-top: 15px;
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #e1e8ed;
+        }
+        .checkbox-group input {
+            width: auto !important;
+            margin-top: 4px;
+            cursor: pointer;
+        }
+        .checkbox-group label {
+            font-size: 13px;
+            font-weight: 500;
+            color: #333;
+            margin: 0;
+            cursor: pointer;
+        }
+
+        /* --- Admin Portal Modal Popup Styling --- */
+        .admin-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: #1a1a1a;
+            padding: 30px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 320px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.5);
+            font-family: 'Poppins', sans-serif;
+            border: 1px solid #333;
+            position: relative;
+        }
+        .modal-content h3 {
+            margin-top: 0;
+            color: #fff;
+            font-size: 18px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .modal-content input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 12px;
+            border-radius: 4px;
+            border: 1px solid #444;
+            background: #2a2a2a;
+            color: #fff;
+            box-sizing: border-box;
+        }
+        .modal-content button {
+            width: 100%;
+            background: #e03131;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .modal-content button:hover {
+            background: #c92a2a;
+        }
+        .close-modal {
+            position: absolute;
+            top: 10px;
+            right: 14px;
+            color: #aaa;
+            font-size: 20px;
+            cursor: pointer;
+        }
+        .admin-icon-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            opacity: 0.5;
+            transition: opacity 0.2s;
+            padding: 5px;
+        }
+        .admin-icon-btn:hover {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Top Info Bar for Timings -->
+<div class="top-bar">
+    <span>🕒 Open Daily: 4:00 PM - 12:00 AM (Midnight)</span>
+    <span>📞 Delivery: 8089 105 069</span>
+</div>
+
+<header>
+    <div class="logo-container">
+        <span class="flame-icon">🔥</span>
+        <h1>Dum Spot</h1>
+        <div class="restaurant-badge">RESTAURANT</div>
+    </div>
+    <nav>
+        <a href="index.html">Home Menu</a>
+        <a href="order.html" class="active">Order Online</a>
+    </nav>
+</header>
+
+<div class="container">
+    <div class="order-form">
+        <h2 style="margin-top: 0; color: var(--brand-red); text-align: center; text-transform: uppercase; font-weight: 800; letter-spacing: 1px;">
+            Place Your Online Order
+        </h2>
+        
+        <div class="radius-notice">
+            📍 <strong>Delivery Range Limit:</strong> We only provide home delivery to locations within a <strong>2 km radius</strong> of Dum Spot Restaurant. 
+            <br>
+            👉 <a href="https://maps.app.goo.gl/euLB6Ww8viqxMacM7?g_st=iw" target="_blank" class="maps-link">Click here to check our live location on Google Maps</a>
+        </div>
+        
+        <form id="customerOrderForm">
+            <div class="form-group">
+                <label for="customerName">Full Name</label>
+                <input type="text" id="customerName" placeholder="Enter your full name" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="customerPhone">Phone Number</label>
+                <input 
+                    type="tel" 
+                    id="customerPhone" 
+                    placeholder="Enter 10-digit mobile number" 
+                    pattern="[6789][0-9]{9}" 
+                    maxlength="10" 
+                    required
+                >
+            </div>
+            
+            <div class="form-group">
+                <label for="customerAddress">Delivery Address</label>
+                <textarea id="customerAddress" rows="3" placeholder="Enter your complete home address" required></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="dishSelect">Select Principal Dish</label>
+                <select id="dishSelect" required>
+                    <option value="Kuttan Dum Biriyani|180">Kuttan Dum Biriyani - ₹180</option>
+                    <option value="Lagoon Dum Biriyani|220">Lagoon Dum Biriyani - ₹220</option>
+                    <option value="Mandi Rice|160">Mandi Rice - ₹160</option>
+                    <option value="Al Faham|240">Al Faham - ₹240</option>
+                    <option value="Ghee Rice|100">Ghee Rice - ₹100</option>
+                    <option value="Chicken Piece|80">Chicken Piece - ₹80</option>
+                    <option value="Chicken Pollichath|280">Chicken Pollichath - ₹280</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="dishQty">Quantity</label>
+                <input type="number" id="dishQty" min="1" value="1" required>
+            </div>
+
+            <div class="checkbox-group">
+                <input type="checkbox" id="radiusConfirm" required>
+                <label for="radiusConfirm">I confirm that my delivery address is within a 2 km distance of Dum Spot Restaurant.</label>
+            </div>
+            
+            <div style="margin-top: 25px;">
+                <button type="submit" id="submitOrderBtn" class="btn">Submit Order to Kitchen</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<footer>
+    <div class="footer-container">
+        <div class="footer-section">
+            <h3>Dum Spot</h3>
+            <p>Serving up the absolute best biriyani and traditional flavors in town.</p>
+        </div>
+        <div class="footer-section">
+            <h3>Service Hours</h3>
+            <p><strong>Everyday:</strong> 4:00 PM - 12:00 AM</p>
+            <p class="delivery-tag">🔴 Home Delivery Available</p>
+        </div>
+         <div class="footer-bottom">
+        &copy; 2026 Dum Spot Restaurant. All Rights Reserved.
+        <!-- Hidden Key Icon For Staff Login Portal -->
+        <button class="admin-icon-btn" id="openAdminModal" title="Staff Portal">🔑</button>
+    </div>
+        <div class="footer-section">
+            <h3>Contact Us</h3>
+            <p><strong>Phone:</strong> 8089 105 069</p>
+            <p style="font-size: 13px; color: #ccc;">പാർട്ടി ഓർഡറുകൾ സ്വീകരിക്കുന്നു.</p>
+        </div>
+    </div>
+   
+</footer>
+
+<!-- Secure Modal Overlay Window -->
+<div class="admin-modal" id="adminModal">
+    <div class="modal-content">
+        <span class="close-modal" id="closeAdminModal">&times;</span>
+        <h3>Staff Login</h3>
+        <form id="adminLoginForm">
+            <input type="text" id="adminUser" placeholder="Username" required>
+            <input type="password" id="adminPass" placeholder="Password" required>
+            <button type="submit">Verify & Access</button>
+        </form>
+    </div>
+</div>
+
+<!-- Firebase Modular SDK Script Configuration -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBqW2a1Nu4x4HM8sVaNUz2TvwNYITjj6O8",
+    authDomain: "dumspotwebapp.firebaseapp.com",
+    projectId: "dumspotwebapp",
+    storageBucket: "dumspotwebapp.firebasestorage.app",
+    messagingSenderId: "335424837749",
+    appId: "1:335424837749:web:e899dc0ffd4896ce1a803c",
+    measurementId: "G-JYMJCJJ88E"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // Modal Setup for order.html (Scoped inside module for compatibility)
+  const modal = document.getElementById('adminModal');
+  const openBtn = document.getElementById('openAdminModal');
+  const closeBtn = document.getElementById('closeAdminModal');
+
+  openBtn.addEventListener('click', () => modal.style.display = 'flex');
+  closeBtn.addEventListener('click', () => modal.style.display = 'none');
+  window.addEventListener('click', (e) => { if (e.target === modal) modal.style.display = 'none'; });
+
+  document.getElementById('adminLoginForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const user = document.getElementById('adminUser').value.trim();
+      const pass = document.getElementById('adminPass').value.trim();
+      if (user === "admin" && pass === "dumspot123") {
+          window.location.href = "admin.html";
+      } else {
+          alert("❌ Invalid Admin Credentials.");
+      }
+  });
+
+  // Main order workflow loop
+  document.getElementById('customerOrderForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const isWithinRadius = document.getElementById('radiusConfirm').checked;
+      if (!isWithinRadius) {
+          alert('❌ Error: Please check your location distance. We only deliver within 2 km.');
+          return;
+      }
+      
+      const itemData = document.getElementById('dishSelect').value.split('|');
+      const dishName = itemData[0];
+      const unitPrice = parseFloat(itemData[1]);
+      const qty = parseInt(document.getElementById('dishQty').value);
+      const totalPrice = unitPrice * qty;
+
+      const newOrder = {
+          id: 'DS-' + Date.now(),
+          name: document.getElementById('customerName').value,
+          phone: document.getElementById('customerPhone').value,
+          address: document.getElementById('customerAddress').value,
+          dish: dishName,
+          quantity: qty,
+          total: totalPrice,
+          status: 'Pending',
+          date: new Date().toLocaleString(),
+          createdAt: Date.now()
+      };
+
+      const submitBtn = document.getElementById('submitOrderBtn');
+      submitBtn.innerText = "Submitting Order...";
+      submitBtn.disabled = true;
+
+      try {
+          await addDoc(collection(db, "orders"), newOrder);
+          alert('🎉 Order successfully sent straight to the Cloud Kitchen!');
+          this.reset();
+      } catch (error) {
+          console.error("Error saving document: ", error);
+          alert('❌ Database error.');
+      } finally {
+          submitBtn.innerText = "Submit Order to Kitchen";
+          submitBtn.disabled = false;
+      }
+  });
+</script>
+
+</body>
+</html>

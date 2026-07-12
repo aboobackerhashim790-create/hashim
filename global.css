@@ -6,7 +6,25 @@
     --light-bg: #F5F6FA;      
     --text-main: #2C3E50;
 }
+html, body {
+    height: 100%;
+    margin: 0;
+}
 
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.menu-container{
+    flex:1;
+    max-width:1000px;
+    width:100%;
+    margin:40px auto;
+    padding:0 20px;
+    box-sizing:border-box;
+}
 * {
     box-sizing: border-box;
 }
@@ -52,6 +70,7 @@ header {
 
 .logo-container {
     margin-bottom: 15px;
+    width: 100%;
 }
 
 .flame-icon {

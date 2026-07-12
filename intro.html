@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Dum Spot</title>
+    <style>
+        /* CSS STYLES */
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #171717; /* Dark background to match restaurant theme */
+            overflow: hidden;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .logo-container {
+            width: 250px;
+            /* Spin animation runs for 2.5s, then fadeOut runs for 1s */
+            animation: spin 2.5s ease-in-out, fadeOut 1s ease-in-out 2.5s forwards;
+        }
+
+        .logo-container img {
+            width: 100%;
+            height: auto;
+        }
+
+        /* 1. Logo Rotation Animation */
+        @keyframes spin {
+            0% { transform: rotate(0deg) scale(0.5); }
+            50% { transform: rotate(180deg) scale(1.2); }
+            100% { transform: rotate(360deg) scale(1); }
+        }
+
+        /* 2. Fade Out Animation */
+        @keyframes fadeOut {
+            from { opacity: 1; transform: scale(1); }
+            to { opacity: 0; transform: scale(0.8); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="logo-container">
+        <img src="ChatGPT Image Jul 12, 2026, 07_57_29 PM.png" alt="Dum Spot Logo">
+    </div>
+
+    <script>
+        // Wait 3.5 seconds (2.5s spin + 1s fade) then redirect
+        setTimeout(() => {
+            window.location.href = "index.html"; 
+        }, 3500);
+    </script>
+</body>
+</html>

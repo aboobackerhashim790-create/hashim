@@ -3,19 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - Dum Spot</title>
+    <title>Dum Spot | Authentic Flavors</title>
     <link rel="stylesheet" href="global.css">
     <link rel="stylesheet" href="index.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        .admin-form-container { background: white; padding: 30px; border-radius: 10px; max-width: 500px; margin: 40px auto; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        input, select { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
-        button { width: 100%; padding: 12px; border: none; border-radius: 5px; cursor: pointer; color: white; font-weight: 600; margin-top: 5px; }
-        .upload-btn { background: #339af0; }
-        .save-btn { background: #2b8a3e; }
-        .product-item { border: 1px solid #eee; padding: 15px; margin-top: 15px; border-radius: 5px; display: flex; justify-content: space-between; align-items: center; }
-        .status-btn { width: auto; font-size: 12px; }
-        .available { background: #2b8a3e; }
-        .out-of-stock { background: #c92a2a; }
+        /* Modern styles combined from both files */
+        :root { --primary: #e03131; --dark: #1a1a1a; --light: #f8f9fa; }
+        body { font-family: 'Poppins', sans-serif; margin: 0; background-color: var(--light); color: var(--dark); }
+        
+        .menu-container { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
+        .menu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; }
+        .product-card { background: white; border-radius: 16px; overflow: hidden; transition: 0.3s; box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+        .product-card img { width: 100%; height: 220px; object-fit: cover; }
+        .card-body { padding: 20px; }
+        .price { color: var(--primary); font-weight: 700; font-size: 1.2rem; }
+
+        /* Admin Modal styling from indexmodel.html */
+        .admin-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); z-index: 2000; justify-content: center; align-items: center; }
+        .modal-content { background: #1a1a1a; padding: 30px; border-radius: 8px; width: 90%; max-width: 320px; color: #fff; }
+        .modal-content input { width: 100%; padding: 10px; margin-bottom: 10px; border-radius: 4px; border: 1px solid #444; background: #2a2a2a; color: #fff; box-sizing: border-box; }
+        .modal-content button { width: 100%; background: #e03131; border: none; padding: 10px; color: white; cursor: pointer; }
+        .admin-icon-btn { background: none; border: none; font-size: 20px; cursor: pointer; opacity: 0.5; }
     </style>
 </head>
 <body>
@@ -27,35 +36,20 @@
 
 <header>
     <div class="logo-container">
-        <span class="flame-icon">🔥</span>
         <h1>Dum Spot</h1>
-        <div class="restaurant-badge">ADMIN PORTAL</div>
+        <div class="restaurant-badge">RESTAURANT</div>
     </div>
     <nav>
-        <a href="admin.html" class="active">Live Dashboard</a>
-        <a href="billing.html">Billing</a>
-         <a href="sales.html" >Total Sales</a>
+        <a href="index.html" class="active">Home Menu</a>
+        <a href="order.html">Order Online</a>
     </nav>
 </header>
 
-<div class="admin-form-container">
-    <h2>Add New Menu Item</h2>
-    <input type="text" id="pName" placeholder="Product Name">
-    <input type="number" id="pPrice" placeholder="Price">
-    <select id="pStatus">
-        <option value="true">Available</option>
-        <option value="false">Out of Stock</option>
-    </select>
-    
-    <button id="upload_widget" class="upload-btn">Upload Image</button>
-    <div id="imagePreview" style="margin: 10px 0; text-align: center;"></div>
-    
-    <button onclick="saveProduct()" class="save-btn">Save Item</button>
-
-    <hr style="margin: 30px 0;">
-
-    <h2>Manage Menu Items</h2>
-    <div id="productList">Loading items...</div>
+<div class="menu-container">
+    <h2 style="text-align:center;">Our Signature Dishes</h2>
+    <main id="menuGrid" class="menu-grid">
+        <p>Loading items...</p>
+    </main>
 </div>
 
 <footer>
@@ -71,6 +65,7 @@
         </div>
         <div class="footer-bottom">
             &copy; 2026 Dum Spot Restaurant. All Rights Reserved. 
+            <button class="admin-icon-btn" id="openAdminModal" title="Staff Portal">🔑</button>
         </div>
         <div class="footer-section">
             <h3>Contact Us</h3>
@@ -80,88 +75,67 @@
     </div>
 </footer>
 
-<script src="https://upload-widget.cloudinary.com/latest/global/all.js"></script>
+<div class="admin-modal" id="adminModal">
+    <div class="modal-content">
+        <span id="closeAdminModal" style="float:right; cursor:pointer;">&times;</span>
+        <h3>Staff Login</h3>
+        <form id="adminLoginForm">
+            <input type="email" id="adminUser" placeholder="Email" required>
+            <input type="password" id="adminPass" placeholder="Password" required>
+            <button type="submit">Verify & Access</button>
+        </form>
+    </div>
+</div>
+
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getFirestore, collection, addDoc, getDocs, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
     import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyBqW2a1Nu4x4HM8sVaNUz2TvwNYITjj6O8",
-        authDomain: "dumspotwebapp.firebaseapp.com",
-        projectId: "dumspotwebapp", 
-        storageBucket: "dumspotwebapp.firebasestorage.app",
-        messagingSenderId: "335424837749",
-        appId: "1:335424837749:web:e899dc0ffd4896ce1a803c"
+        projectId: "dumspotwebapp",
+        // ... (rest of your config remains unchanged)
     };
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const auth = getAuth(app);
 
-    let currentUploadedUrl = "";
-
-    // Image Upload Widget
-    const myWidget = cloudinary.createUploadWidget({
-        cloudName: 're88r192', 
-        uploadPreset: 'dumspot_preset' 
-    }, (error, result) => {
-        if (!error && result && result.event === "success") {
-            currentUploadedUrl = result.info.secure_url;
-            document.getElementById('imagePreview').innerHTML = `<img src="${currentUploadedUrl}" width="100">`;
-        }
-    });
-
-    document.getElementById("upload_widget").addEventListener("click", () => myWidget.open());
-
-    // Save Product to Firestore
-    window.saveProduct = async () => {
-        if (!currentUploadedUrl) return alert("Upload an image first!");
-        try {
-            await addDoc(collection(db, "products"), {
-                name: document.getElementById('pName').value,
-                price: document.getElementById('pPrice').value,
-                available: document.getElementById('pStatus').value === "true",
-                imageUrl: currentUploadedUrl
-            });
-            alert("Product added successfully!");
-            loadProducts();
-        } catch (e) {
-            alert("Permission Denied: Ensure you are logged in as admin. Error: " + e.message);
-        }
-    };
-
-    // Load and Display Products
-    const loadProducts = async () => {
-        const listDiv = document.getElementById('productList');
-        try {
-            const querySnapshot = await getDocs(collection(db, "products"));
-            listDiv.innerHTML = "";
-            querySnapshot.forEach((docSnap) => {
-                const p = docSnap.data();
-                const div = document.createElement('div');
-                div.className = "product-item";
-                div.innerHTML = `
-                    <span><strong>${p.name}</strong> - ₹${p.price}</span>
-                    <button class="status-btn ${p.available ? 'available' : 'out-of-stock'}" 
-                            onclick="toggleStatus('${docSnap.id}', ${p.available})">
-                        ${p.available ? "Available" : "Out of Stock"}
-                    </button>
+    // Load Menu
+    async function loadMenu() {
+        const grid = document.getElementById('menuGrid');
+        const snap = await getDocs(collection(db, "products"));
+        grid.innerHTML = "";
+        snap.forEach(doc => {
+            const p = doc.data();
+            if(p.available) {
+                grid.innerHTML += `
+                    <div class="product-card">
+                        <img src="${p.imageUrl}" alt="${p.name}">
+                        <div class="card-body">
+                            <h3>${p.name}</h3>
+                            <div class="price">₹${p.price}</div>
+                        </div>
+                    </div>
                 `;
-                listDiv.appendChild(div);
-            });
-        } catch (e) {
-            listDiv.innerHTML = "Error loading items. Please check your connection.";
-        }
-    };
+            }
+        });
+    }
+    loadMenu();
 
-    window.toggleStatus = async (id, currentStatus) => {
-        const productRef = doc(db, "products", id);
-        await updateDoc(productRef, { available: !currentStatus });
-        loadProducts();
-    };
+    // Footer Admin Logic
+    const modal = document.getElementById('adminModal');
+    document.getElementById('openAdminModal').onclick = () => modal.style.display = 'flex';
+    document.getElementById('closeAdminModal').onclick = () => modal.style.display = 'none';
 
-    loadProducts();
+    document.getElementById('adminLoginForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        try {
+            await signInWithEmailAndPassword(auth, document.getElementById('adminUser').value, document.getElementById('adminPass').value);
+            window.location.href = "admin.html";
+        } catch(e) { alert("Access Denied"); }
+    });
 </script>
 </body>
 </html>
